@@ -111,10 +111,10 @@ php -S localhost:8000
 4. Choose `main` branch and `/ (root)` folder
 5. Click **Save**
 
-Your app will be live at:
+A demo app lives at:
 
 ```
-https://<username>.github.io/<repo-name>/
+https://jinkxt.github.io/cld/
 ```
 
 > **Note:** GitHub Pages on free accounts requires the repository to be public.
