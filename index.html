@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immobilier Analyser - France Real Estate Analyzer</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background">
+        <div class="gradient-orb one"></div>
+        <div class="gradient-orb two"></div>
+        <div class="gradient-orb three"></div>
+    </div>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">🏠</div>
+                    <div>
+                        <h1 id="appTitle">Immobilier Analyser</h1>
+                        <p id="appSubtitle">Compare Renting vs Buying vs Inheriting in France</p>
+                    </div>
+                </div>
+                <div class="header-controls">
+                    <div class="info-badge">
+                        <span>France 🇫🇷</span>
+                    </div>
+                    <div class="control-buttons">
+                        <button id="themeToggle" class="icon-button" title="Toggle theme" aria-label="Toggle light/dark theme">
+                            <span class="theme-icon">🌙</span>
+                        </button>
+                        <select id="languageSelect" class="language-select" aria-label="Select language">
+                            <option value="en">English</option>
+                            <option value="fr">Français</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <div class="content-wrapper">
+            <!-- SIDEBAR --> 
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Parameters</h2>
+                    <p>Adjust to see real-time changes</p>
+                </div>
+
+                <!-- Property Section -->
+                <div class="param-section">
+                    <h3 class="section-title">Property</h3>
+                    
+                    <div class="param-group">
+                        <label class="param-label">
+                            <span>Property Price</span>
+                            <span class="param-value" id="priceValue">€400,000</span>
+                        </label>
+                        <input type="range" id="priceSlider" min="150000" max="1000000" value="400000" step="10000" class="slider">
+                        <div class="slider-marks">
+                            <span>€150k</span>
+                            <span>€1M</span>
+                        </div>
+                    </div>
+
+                    <div class="dual-param">
+                        <div class="param-group flex-1">
+                            <label class="param-label">
+                                <span>Down Payment</span>
+                                <span class="param-value" id="downPaymentValue">20%</span>
+                            </label>
+                            <input type="range" id="downPaymentSlider" min="10" max="50" value="20" step="1" class="slider">
+                        </div>
+                        <div class="param-group flex-1">
+                            <label class="param-label">
+                                <span>Mortgage Rate</span>
+                                <span class="param-value" id="rateValue">4.5%</span>
+                            </label>
+                            <input type="range" id="rateSlider" min="2" max="8" value="4.5" step="0.1" class="slider">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rental Section -->
+                <div class="param-section">
+                    <h3 class="section-title">Rental</h3>
+                    
+                    <div class="dual-param">
+                        <div class="param-group flex-1">
+                            <label class="param-label">
+                                <span>Monthly Rent</span>
+                                <span class="param-value" id="rentValue">€2,000</span>
+                            </label>
+                            <input type="range" id="rentSlider" min="500" max="5000" value="2000" step="100" class="slider">
+                        </div>
+                        <div class="param-group flex-1">
+                            <label class="param-label">
+                                <span>Inflation Rate</span>
+                                <span class="param-value" id="inflationValue">2.0%</span>
+                            </label>
+                            <input type="range" id="inflationSlider" min="0.5" max="5" value="2.0" step="0.1" class="slider">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenarios Section -->
+                <div class="param-section">
+                    <h3 class="section-title">Life Events</h3>
+                    
+                    <div class="dual-param">
+                        <div class="param-group flex-1">
+                            <label class="param-label">
+                                <span>Buy at Age</span>
+                                <span class="param-value" id="buyAgeValue">35</span>
+                            </label>
+                            <input type="range" id="buyAgeSlider" min="25" max="65" value="35" step="1" class="slider">
+                        </div>
+                        <div class="param-group flex-1">
+                            <label class="param-label">
+                                <span>Inherit at Age</span>
+                                <span class="param-value" id="inheritAgeValue">45</span>
+                            </label>
+                            <input type="range" id="inheritAgeSlider" min="25" max="75" value="45" step="1" class="slider">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Taxes Section -->
+                <div class="param-section">
+                    <h3 class="section-title">French Taxes</h3>
+                    
+                    <div class="dual-param">
+                        <div class="param-group flex-1">
+                            <label class="param-label">
+                                <span>Inheritance Tax</span>
+                                <span class="param-value" id="inheritTaxValue">60%</span>
+                            </label>
+                            <input type="range" id="inheritTaxSlider" min="0" max="60" value="60" step="5" class="slider">
+                            <div class="help-text">Child: 0%, Stranger: 60%</div>
+                        </div>
+                        <div class="param-group flex-1">
+                            <label class="param-label">
+                                <span>Capital Gains Tax</span>
+                                <span class="param-value" id="capitalGainsTaxValue">19%</span>
+                            </label>
+                            <input type="range" id="capitalGainsTaxSlider" min="0" max="45" value="19" step="1" class="slider">
+                            <div class="help-text">On gains only</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="assumptions-box">
+                    <h4>📋 Assumptions</h4>
+                    <ul>
+                        <li>Acquisition fees: 7.5% (notaire)</li>
+                        <li>Annual maintenance: €2,500</li>
+                        <li>Property tax (ITP): €800/year</li>
+                        <li>Home insurance: €300/year</li>
+                        <li>Mortgage: 25 years</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- MAIN PANEL -->
+            <main class="main-panel">
+                <!-- TAB NAVIGATION -->
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="overview">Overview</button>
+                    <button class="tab-btn" data-tab="detailed">Detailed Analysis</button>
+                    <button class="tab-btn" data-tab="comparison">Comparison</button>
+                </div>
+
+                <!-- OVERVIEW TAB -->
+                <div class="tab-content active" id="overview-tab">
+                    <!-- METRICS GRID -->
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-rent">
+                            <div class="metric-header">
+                                <span class="metric-icon">🏘️</span>
+                                <span class="metric-title">Rent</span>
+                            </div>
+                            <div class="metric-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Total Spent</span>
+                                    <span class="stat-value" id="rentTotalSpent">—</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Equity at 85</span>
+                                    <span class="stat-value zero">€0</span>
+                                </div>
+                            </div>
+                            <div class="metric-chart">
+                                <div id="mini-chart-rent"></div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card metric-buy">
+                            <div class="metric-header">
+                                <span class="metric-icon">🏠</span>
+                                <span class="metric-title">Buy</span>
+                            </div>
+                            <div class="metric-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Total Spent</span>
+                                    <span class="stat-value" id="buyTotalSpent">—</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Equity at 85</span>
+                                    <span class="stat-value" id="buyEquity">—</span>
+                                </div>
+                            </div>
+                            <div class="metric-chart">
+                                <div id="mini-chart-buy"></div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card metric-inherit">
+                            <div class="metric-header">
+                                <span class="metric-icon">🎁</span>
+                                <span class="metric-title">Inherit</span>
+                            </div>
+                            <div class="metric-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Total Spent</span>
+                                    <span class="stat-value" id="inheritTotalSpent">—</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Equity at 85</span>
+                                    <span class="stat-value" id="inheritEquity">—</span>
+                                </div>
+                            </div>
+                            <div class="metric-chart">
+                                <div id="mini-chart-inherit"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MAIN CHARTS -->
+                    <div class="charts-section">
+                        <div class="chart-wrapper">
+                            <div class="chart-header">
+                                <h3>Cumulative Costs Over Time</h3>
+                                <p>Total amount spent from age 25 to 85</p>
+                            </div>
+                            <div id="chart-costs" class="chart"></div>
+                        </div>
+
+                        <div class="chart-wrapper">
+                            <div class="chart-header">
+                                <h3>Net Cost After Equity</h3>
+                                <p>Real financial burden when accounting for home equity</p>
+                            </div>
+                            <div id="chart-netcost" class="chart"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAILED TAB -->
+                <div class="tab-content" id="detailed-tab">
+                    <div class="detailed-grid">
+                        <div class="detail-card">
+                            <h3>🏘️ Renting</h3>
+                            <div class="detail-rows">
+                                <div class="detail-row">
+                                    <span>Total Rent Paid</span>
+                                    <span id="detail-rent-total">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Equity Built</span>
+                                    <span>€0</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Net Cost</span>
+                                    <span id="detail-rent-net">—</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-card">
+                            <h3>🏠 Buying</h3>
+                            <div class="detail-rows">
+                                <div class="detail-row">
+                                    <span>Rent Before Buy</span>
+                                    <span id="detail-buy-rent">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Down Payment</span>
+                                    <span id="detail-buy-down">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Acquisition Fees</span>
+                                    <span id="detail-buy-fees">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Mortgage Paid</span>
+                                    <span id="detail-buy-mortgage">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Maintenance/Tax</span>
+                                    <span id="detail-buy-maint">—</span>
+                                </div>
+                                <div class="detail-row total">
+                                    <span>Total Spent</span>
+                                    <span id="detail-buy-total">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Home Equity</span>
+                                    <span id="detail-buy-equity">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Capital Gains Tax</span>
+                                    <span id="detail-buy-gainsTax">—</span>
+                                </div>
+                                <div class="detail-row highlight">
+                                    <span>Net Cost</span>
+                                    <span id="detail-buy-net">—</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-card">
+                            <h3>🎁 Inheriting</h3>
+                            <div class="detail-rows">
+                                <div class="detail-row">
+                                    <span>Rent Before Inherit</span>
+                                    <span id="detail-inherit-rent">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Inheritance Tax (Due)</span>
+                                    <span id="detail-inherit-tax">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Maintenance/Tax</span>
+                                    <span id="detail-inherit-maint">—</span>
+                                </div>
+                                <div class="detail-row total">
+                                    <span>Total Spent</span>
+                                    <span id="detail-inherit-total">—</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Property Value</span>
+                                    <span id="detail-inherit-equity">—</span>
+                                </div>
+                                <div class="detail-row highlight">
+                                    <span>Net Cost</span>
+                                    <span id="detail-inherit-net">—</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMPARISON TAB -->
+                <div class="tab-content" id="comparison-tab">
+                    <div class="comparison-wrapper">
+                        <div class="comparison-matrix">
+                            <div class="comp-header"></div>
+                            <div class="comp-header">💰 Total Spent</div>
+                            <div class="comp-header">💎 Equity at 85</div>
+                            <div class="comp-header">📊 Net Cost</div>
+
+                            <div class="comp-row-label">🏘️ Rent</div>
+                            <div class="comp-cell"><span id="comp-rent-spent">—</span></div>
+                            <div class="comp-cell zero">€0</div>
+                            <div class="comp-cell"><span id="comp-rent-net">—</span></div>
+
+                            <div class="comp-row-label">🏠 Buy</div>
+                            <div class="comp-cell"><span id="comp-buy-spent">—</span></div>
+                            <div class="comp-cell"><span id="comp-buy-equity">—</span></div>
+                            <div class="comp-cell winner"><span id="comp-buy-net">—</span></div>
+
+                            <div class="comp-row-label">🎁 Inherit</div>
+                            <div class="comp-cell"><span id="comp-inherit-spent">—</span></div>
+                            <div class="comp-cell"><span id="comp-inherit-equity">—</span></div>
+                            <div class="comp-cell"><span id="comp-inherit-net">—</span></div>
+                        </div>
+
+                        <div class="insights-box">
+                            <h4>💡 Key Insights</h4>
+                            <div id="insights-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

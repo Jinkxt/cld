@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifetime Accommodation Cost Analyzer (EUR)</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .control-group {
+            margin-bottom: 25px;
+        }
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+        .value-display {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 6px;
+            font-weight: 600;
+            color: #667eea;
+            font-size: 14px;
+            text-align: center;
+        }
+        .chart-container {
+            background: white;
+        }
+        #chart {
+            width: 100%;
+            height: 600px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            .stats {
+                grid-template-columns: 1fr;
+            }
+]]
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Lifetime Accommodation Cost Analyzer</h1>
+            <p>Compare housing scenarios and discover the best financial decision for your future</p>
+        </div>
+
+        <div class="content">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="rentSlider">Monthly Rent (EUR)</label>
+                    <input type="range" id="rentSlider" min="500" max="3000" value="1500" step="100">
+                    <div class="value-display" id="rentValue">€1,500</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="inflationSlider">Rent Inflation (%)</label>
+                    <input type="range" id="inflationSlider" min="0.01" max="0.08" value="0.03" step="0.01">
+                    <div class="value-display" id="inflationValue">3.0%</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="buyAgeSlider">Buy at Age</label>
+                    <input type="range" id="buyAgeSlider" min="25" max="60" value="35" step="1">
+                    <div class="value-display" id="buyAgeValue">Age 35</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="rateSlider">Mortgage Rate (%)</label>
+                    <input type="range" id="rateSlider" min="0.02" max="0.10" value="0.05" step="0.005">
+                    <div class="value-display" id="rateValue">5.0%</div>
+                </div>
+
+                <div class="control-group">
+                    <label for="inheritSlider">Inherit at Age</label>
+                    <input type="range" id="inheritSlider" min="25" max="70" value="40" step="1">
+                    <div class="value-display" id="inheritValue">Age 40</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div id="chart"></div>
+
+                <div class="stats" id="stats">
+                    <div class="stat-box">
+                        <div class="stat-label">Rent Scenario (Age 85)</div>
+                        <div class="stat-value" id="rentCost">€—</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Buy Scenario (Age 85)</div>
+                        <div class="stat-value" id="buyCost">€—</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Inherit Scenario (Age 85)</div>
+                        <div class="stat-value" id="inheritCost">€—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LIFE_START = 25;
+        const LIFE_END = 85;
+        const HOME_PRICE = 400000;
+        const MAINTENANCE = 5000;
+        const PROPERTY_TAX = 4000;
+
+        function formatCurrency(value) {
+            return '€' + value.toLocaleString('de-DE', {maximumFractionDigits: 0});
+        }
+
+        function calculateScenarios(monthlyRent, rentInflation, buyAge, mortgageRate) {
+            const ages = Array.from({length: LIFE_END - LIFE_START + 1}, (_, i) => LIFE_START + i);
+
+            // Rent scenario
+            const rentCosts = [];
+            let cumRent = 0;
+            for (let i = 0; i < ages.length; i++) {
+                const annualRent = monthlyRent * 12 * Math.pow(1 + rentInflation, i);
+                cumRent += annualRent;
+                rentCosts.push(cumRent);
+            }
+
+            // Buy scenario
+            const buyCosts = [];
+            let cumBuy = 0;
+            for (let i = 0; i < ages.length; i++) {
+                const age = ages[i];
+                let cost = 0;
+                if (age < buyAge) {
+                    cost = 0;
+                } else if (age === buyAge) {
+                    cost = HOME_PRICE * 0.20;
+                } else {
+                    if (age < buyAge + 30) {
+                        const principal = HOME_PRICE * 0.80;
+                        const monthlyRate = mortgageRate / 12;
+                        const n = 30 * 12;
+                        const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+                        cost = monthlyPayment * 12;
+                    }
+                    cost += MAINTENANCE + PROPERTY_TAX;
+                }
+                cumBuy += cost;
+                buyCosts.push(cumBuy);
+            }
+
+            // Inherit scenario
+            const inheritCosts = [];
+            let cumInherit = 0;
+            for (let i = 0; i < ages.length; i++) {
+                const age = ages[i];
+                const cost = age < 40 ? 0 : MAINTENANCE + PROPERTY_TAX;
+                cumInherit += cost;
+                inheritCosts.push(cumInherit);
+            }
+
+            return { ages, rentCosts, buyCosts, inheritCosts };
+        }
+
+        function updateChart() {
+            const monthlyRent = parseFloat(document.getElementById('rentSlider').value);
+            const rentInflation = parseFloat(document.getElementById('inflationSlider').value);
+            const buyAge = parseInt(document.getElementById('buyAgeSlider').value);
+            const mortgageRate = parseFloat(document.getElementById('rateSlider').value);
+            const inheritAge = parseInt(document.getElementById('inheritSlider').value);
+
+            // Update value displays
+            document.getElementById('rentValue').textContent = formatCurrency(monthlyRent) + '/month';
+            document.getElementById('inflationValue').textContent = (rentInflation * 100).toFixed(1) + '%';
+            document.getElementById('buyAgeValue').textContent = 'Age ' + buyAge;
+            document.getElementById('rateValue').textContent = (mortgageRate * 100).toFixed(2) + '%';
+            document.getElementById('inheritValue').textContent = 'Age ' + inheritAge;
+
+            const { ages, rentCosts, buyCosts, inheritCosts } = calculateScenarios(monthlyRent, rentInflation, buyAge, mortgageRate);
+
+            // Update stats
+            document.getElementById('rentCost').textContent = formatCurrency(rentCosts[rentCosts.length - 1]);
+            document.getElementById('buyCost').textContent = formatCurrency(buyCosts[buyCosts.length - 1]);
+            document.getElementById('inheritCost').textContent = formatCurrency(inheritCosts[inheritCosts.length - 1]);
+
+            const trace1 = {
+                x: ages,
+                y: rentCosts,
+                name: 'Rent Entire Life',
+                line: {color: '#3B82F6', width: 4},
+                hovertemplate: '<b>Age:</b> %{x}<br><b>Total Cost:</b> ' + '€%{y:,.0f}<extra></extra>'
+            };
+
+            const trace2 = {
+                x: ages,
+                y: buyCosts,
+                name: 'Buy at ' + buyAge,
+                line: {color: '#10B981', width: 4},
+                hovertemplate: '<b>Age:</b> %{x}<br><b>Total Cost:</b> ' + '€%{y:,.0f}<extra></extra>'
+            };
+
+            const trace3 = {
+                x: ages,
+                y: inheritCosts,
+                name: 'Inherit at ' + inheritAge,
+                line: {color: '#F59E0B', width: 4},
+                hovertemplate: '<b>Age:</b> %{x}<br><b>Total Cost:</b> ' + '€%{y:,.0f}<extra></extra>'
+            };
+
+            const layout = {
+                title: '<b>Lifetime Accommodation Costs (EUR)</b>',
+                xaxis: {
+                    title: '<b>Age (years)</b>',
+                    showgrid: true,
+                    gridwidth: 1,
+                    gridcolor: '#E5E7EB',
+                    zeroline: false
+                },
+                yaxis: {
+                    title: '<b>Cumulative Cost (EUR)</b>',
+                    showgrid: true,
+                    gridwidth: 1,
+                    gridcolor: '#E5E7EB',
+                    zeroline: false
+                },
+                hovermode: 'x unified',
+                plot_bgcolor: '#F9FAFB',
+                paper_bgcolor: '#FFFFFF',
+                font: {family: 'Arial, sans-serif', size: 12},
+                margin: {l: 60, r: 40, t: 60, b: 60},
+                legend: {x: 0.02, y: 0.98}
+            };
+
+            Plotly.newPlot('chart', [trace1, trace2, trace3], layout, {responsive: true});
+        }
+
+        document.getElementById('rentSlider').addEventListener('input', updateChart);
+        document.getElementById('inflationSlider').addEventListener('input', updateChart);
+        document.getElementById('buyAgeSlider').addEventListener('input', updateChart);
+        document.getElementById('rateSlider').addEventListener('input', updateChart);
+        document.getElementById('inheritSlider').addEventListener('input', updateChart);
+
+        updateChart();
+    </script>
+</body>
+</html>
